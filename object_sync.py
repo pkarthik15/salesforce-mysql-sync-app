@@ -38,8 +38,8 @@ def update_sync(session_id:str, server_url:str, query:str, table_name:str):
             response_json = response.json()
             total_size = response_json["totalSize"]
             if(len(response_json["records"]) > 0):
-                print(f"Fetched {page_size} records of {total_size}")
                 page_size += len(response_json["records"])
+                print(f"Fetched {page_size} records of {total_size}")
                 df = pd.DataFrame.from_dict(response_json["records"])
                 df = df.drop('attributes', axis=1)
                 save_data_to_table(df, table_name, method)
