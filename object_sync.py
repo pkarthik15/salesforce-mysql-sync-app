@@ -1,6 +1,8 @@
 import pandas as pd
 from salesforce import get_records
 from db import save_data_to_table, truncate_table, get_upsert_method
+from config import convert_time
+
 
 def full_sync(session_id:str, server_url:str, query:str, table_name:str):
     print("Sync Started")
@@ -16,6 +18,13 @@ def full_sync(session_id:str, server_url:str, query:str, table_name:str):
             page_size += len(response_json["records"])
             df = pd.DataFrame.from_dict(response_json["records"])
             df = df.drop('attributes', axis=1)
+
+            if 'CreatedDate' in df.columns:
+                df['CreatedDate'] = df['CreatedDate'].apply(convert_time)
+
+            if 'LastModifiedDate' in df.columns:
+                df['LastModifiedDate'] = df['LastModifiedDate'].apply(convert_time)
+
             save_data_to_table(df, table_name)
             print(f"fetched {page_size} records of {total_size}")
             if(response_json["done"] == True):
@@ -42,6 +51,13 @@ def update_sync(session_id:str, server_url:str, query:str, table_name:str):
                 print(f"Fetched {page_size} records of {total_size}")
                 df = pd.DataFrame.from_dict(response_json["records"])
                 df = df.drop('attributes', axis=1)
+
+                if 'CreatedDate' in df.columns:
+                    df['CreatedDate'] = df['CreatedDate'].apply(convert_time)
+
+                if 'LastModifiedDate' in df.columns:
+                    df['LastModifiedDate'] = df['LastModifiedDate'].apply(convert_time)
+
                 save_data_to_table(df, table_name, method)
                 print(f"Saved {page_size} records of {total_size}")
             else:

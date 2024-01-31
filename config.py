@@ -25,3 +25,8 @@ def get_date_time_n_mins_ago_utc(n:int) -> str:
     time_15mins_ago = time_15mins_ago.replace(second = 0, microsecond=0)
     time_15mins_ago_str = time_15mins_ago.isoformat().replace('+00:00', 'Z')
     return time_15mins_ago_str
+
+
+def convert_time(x):
+    dt = datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%f%z")
+    return dt
